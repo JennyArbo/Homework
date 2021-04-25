@@ -98,6 +98,17 @@ ORDER BY total_spent;
   "        Group Key: customer_id"
   "        ->  Seq Scan on payment  (cost=0.00..270.42 rows=15542 width=8)"
 
+  --Explain Analyze instead:
+  "Sort  (cost=383.25..384.75 rows=599 width=34) (actual time=39.937..39.978 rows=599 loops=1)"
+"  Sort Key: (sum(amount))"
+"  Sort Method: quicksort  Memory: 53kB"
+"  ->  HashAggregate  (cost=348.13..355.62 rows=599 width=34) (actual time=38.632..38.828 rows=599 loops=1)"
+"        Group Key: customer_id"
+"        Batches: 1  Memory Usage: 297kB"
+"        ->  Seq Scan on payment  (cost=0.00..270.42 rows=15542 width=8) (actual time=0.562..6.504 rows=14596 loops=1)"
+"Planning Time: 0.759 ms"
+"Execution Time: 40.752 ms"
+
   --For question 5:
   "Sort  (cost=748.16..764.09 rows=6372 width=23)"
   "  Sort Key: (count(f.film_id)) DESC"
@@ -113,6 +124,32 @@ ORDER BY total_spent;
   "              ->  Hash  (cost=66.50..66.50 rows=1000 width=4)"
   "                    ->  Seq Scan on film f  (cost=0.00..66.50 rows=1000 width=4)"
   "                          Filter: ((release_year)::integer = 2006)"
+
+  --Explain Analyze for question 5:
+  "Sort  (cost=748.16..764.09 rows=6372 width=23) (actual time=30.207..30.953 rows=200 loops=1)"
+"  Sort Key: (count(f.film_id)) DESC"
+"  Sort Method: quicksort  Memory: 40kB"
+"  ->  HashAggregate  (cost=281.80..345.52 rows=6372 width=23) (actual time=29.405..30.237 rows=200 loops=1)"
+"        Group Key: fa.actor_id, a.last_name, a.first_name"
+"        Batches: 1  Memory Usage: 241kB"
+"        ->  Hash Join  (cost=85.50..218.08 rows=6372 width=19) (actual time=17.036..28.222 rows=5462 loops=1)"
+"              Hash Cond: (fa.film_id = f.film_id)"
+"              ->  Hash Join  (cost=6.50..122.30 rows=6372 width=17) (actual time=9.009..17.650 rows=5462 loops=1)"
+"                    Hash Cond: (fa.actor_id = a.actor_id)"
+"                    ->  Seq Scan on film_actor fa  (cost=0.00..98.72 rows=6372 width=4) (actual time=6.194..8.283 rows=5462 loops=1)"
+"                    ->  Hash  (cost=4.00..4.00 rows=200 width=17) (actual time=1.384..1.385 rows=200 loops=1)"
+"                          Buckets: 1024  Batches: 1  Memory Usage: 18kB"
+"                          ->  Seq Scan on actor a  (cost=0.00..4.00 rows=200 width=17) (actual time=0.612..1.333 rows=200 loops=1)"
+"              ->  Hash  (cost=66.50..66.50 rows=1000 width=4) (actual time=7.375..8.101 rows=1000 loops=1)"
+"                    Buckets: 1024  Batches: 1  Memory Usage: 44kB"
+"                    ->  Seq Scan on film f  (cost=0.00..66.50 rows=1000 width=4) (actual time=0.015..0.366 rows=1000 loops=1)"
+"                          Filter: ((release_year)::integer = 2006)"
+"Planning Time: 10.690 ms"
+"Execution Time: 32.312 ms"
+
+  --For these explain plans, we see cost of performing the query. This can allow us to look at how long a query is taking to plan and perform.
+  --This data can be used to optimize queries to minimize the time needed to perform the query and the amount of memory needed.
+  --We can also use Explain Analyze to obtain more detailed data (with actual times given).
 
 --7)What is the average rental rate per genre?
 --#7: Average rental rate for each genre
@@ -155,21 +192,31 @@ GROUP BY rental_time_return;
 --to determine whether a film was early, on time, or late. I again saved this into a new table called rental_time_details (this was probably unnecessary).
 --Finally I grouped by the returns (early, on time, late) and then counted how many films fell into each category.
 
---Below query is not working. I was trying to simplify and combine the multiple queries into a single query.
-SELECT film_id
+--Since we were given extra time to work on this assignment, I redid the problem and  combined the multiple queries into a single query.
+SELECT
+SUM(CASE
+	WHEN make_interval(days => rental_duration) = (rental.return_date - rental.rental_date)
+	THEN 1
+	ELSE 0
+	END) AS ontime,
+SUM(CASE
+	WHEN make_interval(days => rental_duration) > (rental.return_date - rental.rental_date)
+	THEN 1
+	ELSE 0
+	END) AS late,
+SUM(CASE
+   WHEN make_interval(days => rental_duration) < (rental.return_date - rental.rental_date)
+	THEN 1
+	ELSE 0
+	END) AS early
 FROM film
 INNER JOIN inventory
 ON film.film_id = inventory.film_id
 INNER JOIN rental
 ON inventory.inventory_id = rental.inventory_id;
-CASE WHEN make_interval(days => rental_duration) = (rental.return_date - rental.rental_date) THEN 'on time'
-WHEN make_interval(days => rental_duration) > (rental.return_date - rental.rental_date) THEN 'early'
-ELSE 'late' END
-AS rental_time_return
-GROUP BY rental_time_return
-ORDER BY COUNT(rental_time_return);
 
-
+--In the above query I used a set of CASE WHEN statements to calculate the # of each films that were returned early, on time, and late.
+--To do this I also had to perform 2 inner joins linking the film, inventory and rental tables from the dataset.
 
 
 --9)What categories are the most rented and what are their total sales?

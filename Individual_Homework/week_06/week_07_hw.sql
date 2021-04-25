@@ -34,6 +34,14 @@ GROUP BY city;
 --Finally, I grouped by city to split the output into 2 results-one for KC and one for STL.
 
 --3) How many film categories are in each category? Why do you think there is a table for category and a table for film category?
+SELECT COUNT(category_id), category_id
+FROM film_category
+GROUP BY category_id
+ORDER BY category_id;
+--I redid this question after class because I realized I had misinterpreted the question. The query counts the number of films in each category
+--and outputs the category_id. I ordered by category_id so it would be more orderly and if I wanted to compare to category names it would be visually
+--easier. Continue reading comment below for the rest of my answer to this question.
+
 --There are 16 film categories and 16 named categories. So there is a 1:1 correlation between the category_id and category name (which makes sense).
 --designations act as "buckets" to bin the films and make them more easily searchable. When including the film IDs, the tables are of different lengths.
 --It would be redundant/a waste of space to include the film's category ID and name in each entry if they were stored in one single table.
@@ -87,6 +95,8 @@ ON f1.rental_rate < f2.avg_rate;
 
 --8) Perform an explain plan on 6 and 7, and describe what you’re seeing and important ways they differ.
 --From #6:
+
+--With Explain only
 "HashAggregate  (cost=227.69..231.02 rows=333 width=21)"
 "  Group Key: film.title, film.rental_rate"
 "  InitPlan 1 (returns $0)"
@@ -99,6 +109,24 @@ ON f1.rental_rate < f2.avg_rate;
 "              ->  Seq Scan on film  (cost=0.00..66.50 rows=333 width=25)"
 "                    Filter: (rental_rate < $0)"
 
+--With Explain Analyze:
+"HashAggregate  (cost=227.69..231.02 rows=333 width=21) (actual time=42.726..42.769 rows=326 loops=1)"
+"  Group Key: film.title, film.rental_rate"
+"  Batches: 1  Memory Usage: 61kB"
+"  InitPlan 1 (returns $0)"
+"    ->  Aggregate  (cost=66.50..66.51 rows=1 width=32) (actual time=34.867..34.867 rows=1 loops=1)"
+"          ->  Seq Scan on film film_1  (cost=0.00..64.00 rows=1000 width=6) (actual time=0.001..33.364 rows=1000 loops=1)"
+"  ->  Hash Join  (cost=70.66..153.55 rows=1525 width=21) (actual time=36.768..41.530 rows=1595 loops=1)"
+"        Hash Cond: (inventory.film_id = film.film_id)"
+"        ->  Seq Scan on inventory  (cost=0.00..70.81 rows=4581 width=2) (actual time=0.014..0.417 rows=4581 loops=1)"
+"        ->  Hash  (cost=66.50..66.50 rows=333 width=25) (actual time=36.083..36.084 rows=341 loops=1)"
+"              Buckets: 1024  Batches: 1  Memory Usage: 28kB"
+"              ->  Seq Scan on film  (cost=0.00..66.50 rows=333 width=25) (actual time=34.887..35.157 rows=341 loops=1)"
+"                    Filter: (rental_rate < $0)"
+"                    Rows Removed by Filter: 659"
+"Planning Time: 7.441 ms"
+"Execution Time: 45.483 ms"
+
 --From #7:
 "HashAggregate  (cost=144.69..148.02 rows=333 width=21)"
 "  Group Key: f1.title, f1.rental_rate"
@@ -108,8 +136,26 @@ ON f1.rental_rate < f2.avg_rate;
 "              ->  Seq Scan on film  (cost=0.00..64.00 rows=1000 width=6)"
 "        ->  Seq Scan on film f1  (cost=0.00..64.00 rows=1000 width=21)"
 
+--With Explain Analyze:
+"HashAggregate  (cost=144.69..148.02 rows=333 width=21) (actual time=1.615..1.662 rows=341 loops=1)"
+"  Group Key: f1.title, f1.rental_rate"
+"  Batches: 1  Memory Usage: 61kB"
+"  ->  Nested Loop  (cost=66.50..143.02 rows=333 width=21) (actual time=0.419..0.785 rows=341 loops=1)"
+"        Join Filter: (f1.rental_rate < (avg(film.rental_rate)))"
+"        Rows Removed by Join Filter: 659"
+"        ->  Aggregate  (cost=66.50..66.51 rows=1 width=32) (actual time=0.404..0.405 rows=1 loops=1)"
+"              ->  Seq Scan on film  (cost=0.00..64.00 rows=1000 width=6) (actual time=0.013..0.209 rows=1000 loops=1)"
+"        ->  Seq Scan on film f1  (cost=0.00..64.00 rows=1000 width=21) (actual time=0.009..0.171 rows=1000 loops=1)"
+"Planning Time: 0.160 ms"
+"Execution Time: 2.294 ms"
+
 --The overall cost is fairly significantly lower for the self join statement used in number 7. The cost is about 63.5% the cost of the process used in
---question 6. So in terms of cost efficacy, it is better the use the self join compared to the subquery for this question.
+--question 6. So in terms of cost efficacy, it is better the use the self join compared to the subquery for this question. This was answered based only
+--on the Explain plans
+
+--I tried explain analyze after the in class discussion. This shows an even more marked difference! Plan time using the subquery is 7.441 ms and join was 0.16ms.
+--Execution plan was 45.483ms for the subquery while it was 2.294ms for the join. This cements the idea that the join is a considerably less costly way
+--to retrieve this data. 
 
 --9) With a window function, write a query that shows the film, its duration, and what percentile the duration fits into.
 This may help https://mode.com/sql-tutorial/sql-window-functions/#rank-and-dense_rank
