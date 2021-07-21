@@ -46,5 +46,5 @@ print(contents)
 10) A new variable is defined and counter is called to create the dictionary of words/punctuation marks and number of occurrences for each. This dictionary is then printed.
 
 **Screenshot of Python program:**
-![Screenshot of Python code](python_cats_code.png)
+![Screenshot of Python code](python_counts_code.png)
 
