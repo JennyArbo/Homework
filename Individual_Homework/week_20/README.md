@@ -12,7 +12,7 @@
 3) If the program executes appropriately, a dictionary is returned which gives first the word or punctuation mark as the key followed by the number of occurrences as the value. The dictionary is ordered with the most commonly occurring words and punctuation first, and the least occurring words and punctuation last. 
 
 **Example output for the cats file in Terminal:**
-![Example output](/Python_cats_script_output.png)
+![Example output](Python_cats_script_output.png)
 
 ### How the python program works
 
@@ -46,5 +46,5 @@ print(contents)
 10) A new variable is defined and counter is called to create the dictionary of words/punctuation marks and number of occurrences for each. This dictionary is then printed.
 
 **Screenshot of Python program:**
-![Screenshot of Python code](/python_cats_code.png)
+![Screenshot of Python code](python_counts_code.png)
 
