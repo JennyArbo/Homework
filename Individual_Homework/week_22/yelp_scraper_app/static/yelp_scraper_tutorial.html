@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Nobel Tutorial</title>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="jumbotron text-center">
+      <!-- Render our data -->
+      <h1> Tutorial </h1>
+      To access the various endpoints, see tutorial notes below.
+    </div>
+<pre>
+    All (endpoint) 
+      GET /all
+      Gives details for restaurants pulled according to current yelp_scraper file for the following categories
+      restaurant_name:
+      restaurant_rating:
+      restaurant_number_reviews:
+      restaurant_price_range:
+      street_address:
+      city_address:
+
+
+    Form_add (endpoint) 
+      GET /form_add
+      Provides text box entries for all data fields for use to add to the current yelp_scraper file.
+      This includes: type (eventually, should be able to do any allowable type but for now only option is 'restaurant')
+                     location (may be entered as city, state OR 5-digit zip code)
+
+    Year (endpoint) (/business_info)
+      POST /business_info
+      Takes data from form add and adds to the current yelp_scraper file.
+      
+      
+
+    Reset (endpoint)
+      GET /reset
+      Allows reset of the file to its initial state (empty)
+      
+</pre>
+      
+
+
+    
+
+
+  </div>
+</body>
+
+</html>
