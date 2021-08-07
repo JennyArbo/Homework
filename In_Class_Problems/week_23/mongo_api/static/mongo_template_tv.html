@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>MongoDB TV Show Tutorial</title>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="jumbotron text-center">
+      <!-- Render our data -->
+      <h1> Tutorial </h1>
+      To access the various endpoints, see tutorial notes below.
+    </div>
+<pre>
+    All (endpoint) 
+      GET /
+      Gives database summary for the tv_shows MongoDB.
+    
+    tutorial (endpoint)
+        GET /tutorial
+        Gives summary of how to use the API
+
+    CREATE (endpoint) 
+      GET /create
+      Takes user to form to input data for a new tv show.
+
+      POST /create
+      Takes user input from the form above and adds the new data to the MongoDB
+
+    UPDATE (endpoint)
+      GET /update
+      Takes user to form to input data in order to update information about a tv show that already exists in the database.
+
+      POST /update
+      Takes data added from the form above and updates the data in the MongoDB
+      
+      
+
+    DELETE (endpoint)
+      GET /delete
+      Takes user input for tv show name to indicate which show records should be deleted.  
+
+      POST /delete
+      Takes the show name information from the GET /delete form and deletes the first record of that show in the database.
+      If there are multiple shows with the same name, each will need to be deleted separately to remove all instances of the show.
+      
+</pre>
+      
+
+
+    
+
+
+  </div>
+</body>
+
+</html>
