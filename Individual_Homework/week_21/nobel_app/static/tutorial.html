@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Nobel Tutorial</title>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="jumbotron text-center">
+      <!-- Render our data -->
+      <h1> Tutorial </h1>
+      To access the various endpoints, see tutorial notes below.
+    </div>
+<pre>
+    All (endpoint) 
+      GET /all
+      Gives details for Nobel prizes for all entries in the current nobel file
+      prizes:
+        year:
+        category:
+        laureates:
+          id:
+          firstname:
+          surname:
+          motivation:
+          share:
+
+    Form_add (endpoint) 
+      GET /form_add
+      Provides text box entries for all data fields for use to add to the current nobel file.
+
+    Year (endpoint) (/year)
+      GET /year
+      Input year and returns all data from that particular year in the current nobel file.
+      
+      POST /year
+      Takes data from form add and adds to the current nobel file.
+      
+      
+
+    Reset (endpoint)
+      GET /reset
+      Allows recovery of the initial nobel file (does not include any info added from POST method)
+      
+</pre>
+      
+
+
+    
+
+
+  </div>
+</body>
+
+</html>
