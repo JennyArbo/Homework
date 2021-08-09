@@ -1,0 +1,1 @@
+All code for this week is stored in the nobel_app folder! Screenshots of everything working are included in the Jupyter notebook. The nobel_app.py not within the nobel_app folder was accidentally added and I can't figure out how to delete it.
